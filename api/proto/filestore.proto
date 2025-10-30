@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+package filestore;
+
+option go_package = "github.com/yashlad/distributed-file-store/api/proto";
+
+// FileStore service for distributed file operations
+service FileStore {
+  rpc Upload(stream UploadRequest) returns (UploadResponse);
+  rpc Download(DownloadRequest) returns (stream DownloadResponse);
+  rpc Delete(DeleteRequest) returns (DeleteResponse);
+  rpc GetFileInfo(FileInfoRequest) returns (FileInfoResponse);
+  rpc ListFiles(ListFilesRequest) returns (ListFilesResponse);
+  rpc GetVersion(VersionRequest) returns (stream DownloadResponse);
+}
+
+message UploadRequest {
+  string filename = 1;
+  bytes chunk = 2;
+  int64 total_size = 3;
+  string content_type = 4;
+}
+
+message UploadResponse {
+  string file_id = 1;
+  string version_id = 2;
+  int64 size = 3;
+  repeated string node_locations = 4;
+  bool success = 5;
+  string message = 6;
+}
+
+message DownloadRequest {
+  string file_id = 1;
+  string version_id = 2; // optional, downloads latest if empty
+}
+
+message DownloadResponse {
+  bytes chunk = 1;
+  int64 total_size = 2;
+  string content_type = 3;
+}
+
+message DeleteRequest {
+  string file_id = 1;
+}
+
+message DeleteResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message FileInfoRequest {
+  string file_id = 1;
+}
+
+message FileInfoResponse {
+  string file_id = 1;
+  string filename = 2;
+  int64 size = 3;
+  string content_type = 4;
+  string created_at = 5;
+  string updated_at = 6;
+  repeated string versions = 7;
+  repeated string replicas = 8;
+}
+
+message ListFilesRequest {
+  int32 page = 1;
+  int32 page_size = 2;
+}
+
+message ListFilesResponse {
+  repeated FileInfoResponse files = 1;
+  int32 total_count = 2;
+}
+
+message VersionRequest {
+  string file_id = 1;
+  string version_id = 2;
+}

@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: filestore-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: filestore
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - filestore-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  filestore-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: filestore-server
+    restart: unless-stopped
+    ports:
+      - "50051:50051"
+    environment:
+      - PORT=50051
+      - MONGO_URI=mongodb://mongodb:27017
+      - DATABASE=filestore
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    volumes:
+      - filestore_data:/tmp/filestore
+    networks:
+      - filestore-network
+    healthcheck:
+      test: ["CMD", "grpcurl", "-plaintext", "localhost:50051", "list"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  mongodb_data:
+    driver: local
+  filestore_data:
+    driver: local
+
+networks:
+  filestore-network:
+    driver: bridge
