@@ -307,20 +307,6 @@ This project follows standard Go conventions:
 - Erasure coding for storage efficiency
 - Cross-datacenter replication
 
-## Contributing
-
-Contributions are welcome! Please follow these guidelines:
-
-1. Fork the repository
-2. Create a feature branch
-3. Write tests for new functionality
-4. Ensure all tests pass
-5. Submit a pull request
-
-## License
-
-MIT License - see LICENSE file for details
-
 ## Acknowledgments
 
 Built as part of a portfolio project demonstrating:
@@ -330,10 +316,6 @@ Built as part of a portfolio project demonstrating:
 - Database integration
 - Container orchestration
 - Comprehensive testing practices
-
-## Contact
-
-For questions or feedback, please open an issue on GitHub.
 
 ## References
 
